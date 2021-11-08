@@ -9,12 +9,10 @@ require("dotenv").config();
 // MongoDB mongodb://localhost:27017/jobPortal
 mongoose
   .connect(
-    "mongodb+srv://Shashidhar_5:<Shashi@123>@cluster0.kms6f.mongodb.net/jobPortal?retryWrites=true&w=majority",
+    "mongodb+srv://Shashidhar_5:Shashi%40123@cluster0.kms6f.mongodb.net/jobPortal?retryWrites=true",
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      // useCreateIndex: true,
-      // useFindAndModify: false,
     }
   )
   .then((res) => console.log("Connected to DB"))
@@ -35,7 +33,7 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 app.use(bodyParser.json()); // support json encoded bodies
-app.use(bodyParser.urlencoded({ extended: false })); // support encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 // Setting up middlewares
 app.use(

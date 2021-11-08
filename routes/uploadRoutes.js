@@ -16,7 +16,9 @@ router.post("/resume", upload.single("file"), (req, res) => {
   // console.log(path.extname(file.originalname));
   // console.log(file);
 
-  if (file.detectedFileExtension !== ".pdf") {
+  console.log(file.detectedFileExtension);
+
+  if (file.detectedFileExtension != ".pdf") {
     res.status(400).json({
       message: "Invalid format",
     });
