@@ -4,15 +4,19 @@ const mongoose = require("mongoose");
 const passportConfig = require("./lib/passportConfig");
 const cors = require("cors");
 const fs = require("fs");
+require("dotenv").config();
 
-// MongoDB
+// MongoDB mongodb://localhost:27017/jobPortal
 mongoose
-  .connect("mongodb://localhost:27017/jobPortal", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    // useCreateIndex: true,
-    // useFindAndModify: false,
-  })
+  .connect(
+    "mongodb+srv://Shashidhar_5:<Shashi@123>@cluster0.kms6f.mongodb.net/jobPortal?retryWrites=true&w=majority",
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      // useCreateIndex: true,
+      // useFindAndModify: false,
+    }
+  )
   .then((res) => console.log("Connected to DB"))
   .catch((err) => console.log(err));
 
@@ -28,10 +32,10 @@ if (!fs.existsSync("./public/profile")) {
 }
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 
 app.use(bodyParser.json()); // support json encoded bodies
-app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+app.use(bodyParser.urlencoded({ extended: false })); // support encoded bodies
 
 // Setting up middlewares
 app.use(

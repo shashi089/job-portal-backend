@@ -3,8 +3,7 @@ const multer = require("multer");
 const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
 const { promisify } = require("util");
-
-const { extname } = require("path/posix");
+const path = require("path");
 
 const pipeline = promisify(require("stream").pipeline);
 
@@ -14,6 +13,8 @@ const upload = multer();
 
 router.post("/resume", upload.single("file"), (req, res) => {
   const { file } = req;
+  // console.log(path.extname(file.originalname));
+  // console.log(file);
 
   if (file.detectedFileExtension !== ".pdf") {
     res.status(400).json({
@@ -21,7 +22,8 @@ router.post("/resume", upload.single("file"), (req, res) => {
     });
   } else {
     const filename = `${uuidv4()}${file.detectedFileExtension}`;
-
+    console.log(filename);
+    console.log(file.stream);
     pipeline(
       file.stream,
       fs.createWriteStream(`${__dirname}/../public/resume/${filename}`)
