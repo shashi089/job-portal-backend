@@ -1,78 +1,76 @@
 const express = require("express");
 const multer = require("multer");
-const fs = require("fs");
-const { v4: uuidv4 } = require("uuid");
-const { promisify } = require("util");
 const path = require("path");
-
-const pipeline = promisify(require("stream").pipeline);
-
 const router = express.Router();
 
-const upload = multer();
+var today = new Date();
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: `${__dirname}/../public/resume`,
+    filename: (req, file, cb) => {
+      cb(
+        null,
+        `${today.getDate()}_${today.getMonth() + 1}_${today.getFullYear()}_${
+          file.originalname
+        }`
+      );
+    },
+
+    fileFilter: (req, file, cb) => {
+      let ext = path.extname(file.originalname);
+      if (ext !== ".pdf") {
+        cb(new Error("File type not supported"));
+      }
+      cb(null, true);
+    },
+  }),
+});
 
 router.post("/resume", upload.single("file"), (req, res) => {
   const { file } = req;
-  // console.log(path.extname(file.originalname));
-  // console.log(file);
 
-  console.log(file.detectedFileExtension);
+  const fname = `${today.getDate()}_${
+    today.getMonth() + 1
+  }_${today.getFullYear()}_${file.originalname}`;
 
-  if (file.detectedFileExtension != ".pdf") {
-    res.status(400).json({
-      message: "Invalid format",
-    });
-  } else {
-    const filename = `${uuidv4()}${file.detectedFileExtension}`;
-    console.log(filename);
-    console.log(file.stream);
-    pipeline(
-      file.stream,
-      fs.createWriteStream(`${__dirname}/../public/resume/${filename}`)
-    )
-      .then(() => {
-        res.send({
-          message: "File uploaded successfully",
-          url: `/host/resume/${filename}`,
-        });
-      })
-      .catch((err) => {
-        res.status(400).json({
-          message: "Error while uploading",
-        });
-      });
-  }
+  res.send({
+    message: "File uploaded successfully",
+    url: `/host/resume/${fname}`,
+  });
 });
 
-router.post("/profile", upload.single("file"), (req, res) => {
-  const { file } = req;
-  console.log(file);
-  if (
-    file.detectedFileExtension !== ".jpg" &&
-    file.detectedFileExtension !== ".png"
-  ) {
-    res.status(400).json({
-      message: "Invalid format",
-    });
-  } else {
-    const filename = `${uuidv4()}${file.detectedFileExtension}`;
+const imgUpload = multer({
+  storage: multer.diskStorage({
+    destination: `${__dirname}/../public/profile`,
+    filename: (req, file, cb) => {
+      cb(
+        null,
+        `${today.getDate()}_${today.getMonth() + 1}_${today.getFullYear()}_${
+          file.originalname
+        }`
+      );
+    },
 
-    pipeline(
-      file.stream,
-      fs.createWriteStream(`${__dirname}/../public/profile/${filename}`)
-    )
-      .then(() => {
-        res.send({
-          message: "Profile image uploaded successfully",
-          url: `/host/profile/${filename}`,
-        });
-      })
-      .catch((err) => {
-        res.status(400).json({
-          message: "Error while uploading",
-        });
-      });
-  }
+    fileFilter: (req, file, cb) => {
+      let ext = path.extname(file.originalname);
+      if (ext !== ".jpg" && ext !== ".png") {
+        cb(new Error("File type not supported"));
+      }
+      cb(null, true);
+    },
+  }),
+});
+router.post("/profile", imgUpload.single("file"), (req, res) => {
+  const { file } = req;
+
+  const fname = `${today.getDate()}_${
+    today.getMonth() + 1
+  }_${today.getFullYear()}_${file.originalname}`;
+
+  res.send({
+    message: "Profile image uploaded successfully",
+    url: `/host/profile/${fname}`,
+  });
 });
 
 module.exports = router;
